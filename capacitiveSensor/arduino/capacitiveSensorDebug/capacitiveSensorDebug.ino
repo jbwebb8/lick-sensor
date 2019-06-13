@@ -8,7 +8,7 @@ int pulseWidth = 100; // duration of digital pulse (ms)
 
 byte lick = 0; // lick variable
 long th = 100; // threshold for detecting lick
-int updateTime = 100; // print values every x ms
+int updateTime = 0.1; // print values every x ms
 long tStart;
 
 int ledVoltage = LOW;
@@ -33,7 +33,8 @@ void loop() {
   if (tCurrent - tStart > updateTime)
   {
     Serial.print(val);
-    Serial.print("\t");
+    //Serial.print("\t");
+    Serial.print("\n");
     tStart = tCurrent;
   }
   
