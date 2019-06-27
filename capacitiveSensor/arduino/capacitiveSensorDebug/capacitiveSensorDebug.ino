@@ -8,7 +8,7 @@ int pulseWidth = 100; // duration of digital pulse (ms)
 
 byte lick = 0; // lick variable
 long th = 100; // threshold for detecting lick
-int updateTime = 0.1; // print values every x ms
+int sampleRate = 30000; // rate to print to serial
 long tStart;
 
 int ledVoltage = LOW;
@@ -30,7 +30,7 @@ void loop() {
   long val = cs.capacitiveSensor(30); // sensitivity
   long tCurrent = millis();
   
-  if (tCurrent - tStart > updateTime)
+  if (tCurrent - tStart > 1.0/sampleRate)
   {
     Serial.print(val);
     //Serial.print("\t");
