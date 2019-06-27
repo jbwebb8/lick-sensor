@@ -4,3 +4,6 @@
 
 # Data
 capacitiveSensor/data/*
+
+# VS Code
+.vscode/*
