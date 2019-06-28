@@ -8,8 +8,10 @@ int pulseWidth = 100; // duration of digital pulse (ms)
 
 byte lick = 0; // lick variable
 long th = 100; // threshold for detecting lick
-int sampleRate = 30000; // rate to print to serial
-long tStart;
+float sampleRate = 30000.0; // rate to print to serial
+unsigned long tStart;
+unsigned long tCurrent; 
+unsigned long samplePeriod; 
 
 int ledVoltage = LOW;
 
@@ -21,68 +23,41 @@ void setup() {
     pinMode(pv[i], OUTPUT);
     digitalWrite(pv[i], LOW);
   }
+
+  // Begin serial transmission
   Serial.begin(115200);
   
-  tStart = millis(); // time in ms
+  // Get start time and minimum sample period
+  tStart = micros(); // time in ms
+  samplePeriod = (unsigned long) ((1.0/sampleRate)*10e6); // period in us
 }
 
 void loop() {
+  // Get current sensor value and time
+  // Note: sensor value acquisition limits transmission rate
   long val = cs.capacitiveSensor(30); // sensitivity
-  long tCurrent = millis();
-  
-  if (tCurrent - tStart > 1.0/sampleRate)
+  tCurrent = micros();
+
+  // Write sensor value with sample frequency or if clock restarted
+  if ((tCurrent - tStart > samplePeriod) || (tCurrent - tStart < 0))
   {
+    Serial.print(tCurrent);
+    Serial.print(" ");
     Serial.print(val);
-    //Serial.print("\t");
     Serial.print("\n");
     tStart = tCurrent;
   }
   
+  // Write digital I/O if threshold crossed
   if ((val > th) && (ledVoltage == LOW))
   {
     writePins(HIGH);
     ledVoltage = HIGH;
   }
-  
   else if ((val < th) && (ledVoltage == HIGH))
   {
     writePins(LOW);
     ledVoltage = LOW;
-  }
-
-  lick = lick || (val > th); // accumulate licks
-
-  if (Serial.available() > 0)
-  {
-    int cmd = Serial.read(); // read command
-    Serial.print(cmd);
-    Serial.print("\t");
-    
-    switch (cmd)
-    {
-      // Start monitoring for licks
-      case 0:
-        lick = 0;
-        break;
-
-      // Stop monitoring for licks
-      case 1:
-        Serial.write(lick);
-        break;
-
-      // Deliver reward
-      case 2:
-        Serial.print("Delivering reward...");
-        writePins(HIGH);
-        delay(pulseWidth);
-        writePins(LOW);
-        break;
-
-      // New value for pulse width
-      default:
-        pulseWidth = cmd;
-        break;
-    }
   }
 }
 
