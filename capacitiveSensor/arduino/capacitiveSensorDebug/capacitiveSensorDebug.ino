@@ -1,27 +1,30 @@
 #include <CapacitiveSensor.h>
 
-CapacitiveSensor cs = CapacitiveSensor(4, 2); // pins for capacitive sensing
-
-int np_valve = 1; // number of pins used to drive valve
-int pv[1] = {23}; // which pins are the actual pins?
-int pulseWidth = 100; // duration of digital pulse (ms)
-
-byte lick = 0; // lick variable
-long th = 100; // threshold for detecting lick
+// Settings
+int nSensors = 2; // number of lick sensors
+long th = 200; // threshold for detecting lick
 float sampleRate = 30000.0; // rate to print to serial
+
+// Sensor I/O
+CapacitiveSensor cs[] = {
+  CapacitiveSensor(4, 2), // pins for capacitive sensing
+  CapacitiveSensor(13, 11)
+};
+long vals[2]; // sensor values
+int pinsOut[2] = {22, 23}; // output pins
+int output[2] = {LOW, LOW}; // current output states
+
+// Timing variables
 unsigned long tStart;
 unsigned long tCurrent; 
 unsigned long samplePeriod; 
 
-int ledVoltage = LOW;
-
 void setup() {
-  
   // Set pins to low voltage
-  for (int i = 0; i < np_valve; i++)
+  for (int i = 0; i < nSensors; i++)
   {
-    pinMode(pv[i], OUTPUT);
-    digitalWrite(pv[i], LOW);
+    pinMode(pinsOut[i], OUTPUT);
+    digitalWrite(pinsOut[i], LOW);
   }
 
   // Begin serial transmission
@@ -35,36 +38,37 @@ void setup() {
 void loop() {
   // Get current sensor value and time
   // Note: sensor value acquisition limits transmission rate
-  long val = cs.capacitiveSensor(30); // sensitivity
+  for (int i = 0; i < nSensors; i++)
+  {
+    vals[i] = cs[i].capacitiveSensor(30);
+  }
   tCurrent = micros();
 
   // Write sensor value with sample frequency or if clock restarted
   if ((tCurrent - tStart > samplePeriod) || (tCurrent - tStart < 0))
   {
     Serial.print(tCurrent);
-    Serial.print(" ");
-    Serial.print(val);
+    for (int i = 0; i < nSensors; i++)
+    {
+      Serial.print(" ");
+      Serial.print(vals[i]);
+    }
     Serial.print("\n");
     tStart = tCurrent;
   }
   
   // Write digital I/O if threshold crossed
-  if ((val > th) && (ledVoltage == LOW))
+  for (int i = 0; i < nSensors; i++)
   {
-    writePins(HIGH);
-    ledVoltage = HIGH;
-  }
-  else if ((val < th) && (ledVoltage == HIGH))
-  {
-    writePins(LOW);
-    ledVoltage = LOW;
-  }
-}
-
-void writePins(uint8_t mode)
-{
-  for (int i = 0; i < np_valve; i++)
-  {
-    digitalWrite(pv[i], mode);
+    if ((vals[i] > th) && (output[i] == LOW))
+    {
+      digitalWrite(pinsOut[i], HIGH);
+      output[i] = HIGH;
+    }
+    else if ((vals[i] < th) && (output[i] == HIGH))
+    {
+      digitalWrite(pinsOut[i], LOW);
+      output[i] = LOW;
+    }
   }
 }
