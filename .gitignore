@@ -8,3 +8,6 @@ capacitiveSensor/data/*
 
 # VS Code
 .vscode/*
+
+# Binaries
+capacitiveSensor/arduino/bin/*
