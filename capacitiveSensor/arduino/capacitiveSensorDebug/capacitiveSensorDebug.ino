@@ -2,13 +2,13 @@
 
 // Settings
 int nSensors = 2; // number of lick sensors
-long th = 200; // threshold for detecting lick
+long th = 100; // threshold for detecting lick
 float sampleRate = 30000.0; // rate to print to serial
 
-// Sensor I/O
+// Sensor I/O (constructor format: (pin_HIGH, pin_LOW))
 CapacitiveSensor cs[] = {
-  CapacitiveSensor(4, 2), // pins for capacitive sensing
-  CapacitiveSensor(13, 11)
+  CapacitiveSensor(13, 11),
+  CapacitiveSensor(4, 2) 
 };
 long vals[2]; // sensor values
 int pinsOut[2] = {22, 23}; // output pins
