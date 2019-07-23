@@ -1,3 +1,6 @@
+#ifndef MOVINGFILTER_H
+#define MOVINGFILTER_H
+
 class MovingFilter {
 
     private:
@@ -22,3 +25,5 @@ class MovingFilter {
         // Methods
         int applyFilter(float y);
 };
+
+#endif
