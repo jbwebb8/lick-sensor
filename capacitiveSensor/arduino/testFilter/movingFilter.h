@@ -3,22 +3,22 @@ class MovingFilter {
     private:
         int t; // current sample number
         int p; // current pointer in buffer
-        float mean; // current buffer mean
-        float std; // current buffer std
-        float *buffer; // buffer containing filter applied to last n data points
+        double mean; // current buffer mean
+        double std; // current buffer std
+        double *buffer; // buffer containing filter applied to last n data points
 
     public:
         // Filter parameters
         int n; // length of buffer in data points
-        float thresh; // number of stds from mean that constitutes signal
-        float alpha; // influence of most recent data point containing signal
+        double thresh; // number of stds from mean that constitutes signal
+        double alpha; // influence of most recent data point containing signal
         
         // Constructor
-        MovingFilter(int n, float thresh, float alpha);
+        MovingFilter(int n, double thresh, double alpha);
 
         // Destructor
-        ~MovingFilter();
+        ~MovingFilter() {};
 
         // Methods
-        int applyFilter(float y);
+        int applyFilter(double y);
 };
