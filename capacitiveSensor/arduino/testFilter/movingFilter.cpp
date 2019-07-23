@@ -53,17 +53,28 @@ int MovingFilter::applyFilter(double y) {
     }
 
     // Update buffer stats
-    mean = mean + (1.0 / (double) n)*(buffer[p] - bufferOld);
-    
-    // TODO: improve update function
-    std = 0;
-    for (int i = 0; i < n; i++){
-        std += pow((buffer[i] - mean), 2);
+    if (t % 100 == 0) {
+        mean = 0;
+        for (int i = 0; i < n; i++) {
+            mean += buffer[i];
+        }
+        mean = mean / (double) n;
+        std = 0;
+        for (int i = 0; i < n; i++){
+            std += pow((buffer[i] - mean), 2);
+        }
+        std = sqrt(std / (double) n);
     }
-    std = sqrt(std / (double) n);
-    //std = pow(std, 2) - (1.0 / (double) n)*(pow(bufferOld - meanOld, 2) + pow(buffer[p] - mean, 2) + 2*(buffer[p]-bufferOld)*(bufferOld-meanOld) + ((double) n - 1)/pow((double) n, 2)*pow(buffer[p]-bufferOld, 2));
-    //printf("%fl\n", std);
-    
+    else {
+        double dMean = (1.0/(double) n)*(buffer[p] - bufferOld);
+        mean += dMean;
+        std = (pow(std, 2) - (1.0/(double) n)*pow(bufferOld - meanOld, 2) 
+               + (1.0/(double) n)*pow(buffer[p] - mean, 2) 
+               + (2*dMean/(double) n)*(bufferOld - meanOld) 
+               + (((double) n - 1)/((double) n))*pow(dMean, 2));
+        std = sqrt(std);
+    }
+
     // Increment indices
     p = (p + 1) % n;
     t++;
