@@ -10,10 +10,11 @@ int randomInt(int lower, int upper) {
 }
 
 // Swap two elements of an array
-void swap(long *xp, long *yp) {
+template <class T>
+void swap(T *xp, T *yp) {
     // Remember: * = get value of pointer
     //           & = get pointer of value
-    long t = *xp;
+    T t = *xp;
     *xp = *yp;
     *yp = t;
 }
@@ -21,29 +22,32 @@ void swap(long *xp, long *yp) {
 // Group subarray into two smaller subarrays (< pivotValue, >= pivotValue),
 // returning the index of the partition. Uses Lomuto partition scheme, 
 // which is simpler but less efficient than Hoare's original partition scheme.
-int partition(long arr[], int pivotIndex, int left, int right) {
+template <class T>
+int partition(T arr[], int pivotIndex, int left, int right) {
     // Get value of arr[pivotIndex]
-    long pivotValue = arr[pivotIndex];
+    T pivotValue = arr[pivotIndex];
 
     // Move pivot to end
-    swap(&arr[pivotIndex], &arr[right]);
+    swap<T>(&arr[pivotIndex], &arr[right]);
 
     // Place all subarray elements < pivotValue on left side of subarray
     int idx = left;
     for (int i = left; i < right; i++) {
         if (arr[i] < pivotValue) {
-            swap(&arr[idx], &arr[i]);
+            swap<T>(&arr[idx], &arr[i]);
             idx++;
         }
     }
 
     // Move pivot from end to proper place, splitting two new subarrays
-    swap(&arr[idx], &arr[right]);
+    swap<T>(&arr[idx], &arr[right]);
 
     return idx;
 }
 
-long quickselect(long arr[], int k, int left, int right) {
+// Select k-th greatest element in sorted array within bounds [left, right]
+template <class T>
+T quickselect(T arr[], int k, int left, int right) {
     // Return element if size(subarray) = 1
     if (left == right) {
         return arr[left];
@@ -53,7 +57,7 @@ long quickselect(long arr[], int k, int left, int right) {
     int pivotIndex = randomInt(left, right);
 
     // Find sorted index of arr[pivotIndex]
-    pivotIndex  = partition(arr, pivotIndex, left , right);
+    pivotIndex  = partition<T>(arr, pivotIndex, left , right);
 
     // Further subpartition if needed
     if (k == pivotIndex) {
@@ -62,11 +66,11 @@ long quickselect(long arr[], int k, int left, int right) {
     }
     else if (k < pivotIndex) {
         // Search in left side of array if k > pivotIndex
-        return quickselect(arr, k, left, pivotIndex-1);
+        return quickselect<T>(arr, k, left, pivotIndex-1);
     }
     else {
         // Search in right side of array if k > pivotIndex
-        return quickselect(arr, k, pivotIndex+1, right);
+        return quickselect<T>(arr, k, pivotIndex+1, right);
     }
 }
 
