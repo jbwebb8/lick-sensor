@@ -54,6 +54,7 @@ int MovingFilter::applyFilter(double y) {
 
     // Update buffer stats
     if (t % 100 == 0) {
+        // Get ground truth stats occasionally to correct drift
         mean = 0;
         for (int i = 0; i < n; i++) {
             mean += buffer[i];
@@ -66,6 +67,7 @@ int MovingFilter::applyFilter(double y) {
         std = sqrt(std / (double) n);
     }
     else {
+        // Use single point updates for faster processing
         double dMean = (1.0/(double) n)*(buffer[p] - bufferOld);
         mean += dMean;
         std = (pow(std, 2) - (1.0/(double) n)*pow(bufferOld - meanOld, 2) 
