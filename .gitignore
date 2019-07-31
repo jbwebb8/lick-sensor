@@ -10,4 +10,4 @@ capacitiveSensor/data/*
 .vscode/*
 
 # Binaries
-capacitiveSensor/arduino/bin/*
+capacitiveSensor/bin/*
