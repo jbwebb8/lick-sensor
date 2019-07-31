@@ -1,3 +1,8 @@
+/******************************************************************************
+ * This script tests the algorithm to extract a noisy signal by reading
+ * from a data file and logging the signal as output.
+ *****************************************************************************/
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>

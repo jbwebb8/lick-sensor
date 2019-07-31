@@ -1,3 +1,7 @@
+/******************************************************************************
+ * This script tests the algorithm to find the median in a given array.
+ *****************************************************************************/
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
