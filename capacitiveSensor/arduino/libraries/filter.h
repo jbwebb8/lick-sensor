@@ -89,6 +89,7 @@ class MovingFilter {
         double mean; // current buffer mean
         double std; // current buffer std
         double *buffer; // buffer containing filter applied to last n data points
+        bool isInitialized; // true if buffer has been properly initialized
 
     public:
         // Filter parameters
@@ -97,13 +98,14 @@ class MovingFilter {
         double alpha; // influence of most recent data point containing signal
         
         // Constructor
-        //MovingFilter() {}; // must add method to initialize buffer if used
+        MovingFilter();
         MovingFilter(long n, double thresh, double alpha);
 
         // Destructor
         ~MovingFilter() {};
 
         // Methods
+        void createFilter(long n, double thresh, double alpha);
         int applyFilter(double y);
         void reset(void);
 };

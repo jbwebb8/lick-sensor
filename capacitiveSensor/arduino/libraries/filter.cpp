@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdint.h>
 //#include <cmath> // g++
 #include<math.h> // arduino
 #include "filter.h"
@@ -17,8 +18,18 @@ int randomInt(int lower, int upper) {
  * moving filter methods
  *****************************************************************************/
 
-// Filter constructor
+// Default constructor
+MovingFilter::MovingFilter(void) {
+    isInitialized = false;
+}
+
+// Parameterized constructor
 MovingFilter::MovingFilter(long n, double thresh, double alpha) {
+    MovingFilter::createFilter(n, thresh, alpha);
+}
+
+// Post hoc construction
+void MovingFilter::createFilter(long n, double thresh, double alpha) {
     // Set parameters
     this->n = n;
     this->thresh = thresh;
@@ -32,10 +43,17 @@ MovingFilter::MovingFilter(long n, double thresh, double alpha) {
 
     // Allocate buffer
     buffer = new double[n];
+
+    // Ready to go
+    isInitialized = true;
 }
 
-// Filter methods
+// Apply filter to next data sample
 int MovingFilter::applyFilter(double y) { 
+    if (!isInitialized) {
+        return INT16_MAX;
+    }
+
     // Signal value
     int x;
     
