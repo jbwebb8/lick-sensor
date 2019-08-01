@@ -32,7 +32,7 @@ void setup() {
   
   // Get start time and minimum sample period
   tStart = micros(); // time in ms
-  samplePeriod = (unsigned long) ((1.0/sampleRate)*10e6); // period in us
+  samplePeriod = (unsigned long) ((1.0/sampleRate)*1e6); // period in us
 }
 
 void loop() {
