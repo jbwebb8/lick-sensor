@@ -4,9 +4,9 @@
 // Settings
 const int nSensors = 2; // number of lick sensors
 double thresh = 4.0; // threshold for detecting lick (stds from mean)
-double alpha = 0.1; // contribution of signal to filter buffer stats
-double tFilter = 0.25; // duration of filter buffer (s) (determines responsiveness)
-double sampleRate = 500.0; // sample frequency (Hz) (determines resolution)
+double alpha = 0.002; // contribution of signal to filter buffer stats
+double tFilter = 0.250; // duration of filter buffer (s) (determines responsiveness)
+double sampleRate = 200.0; // sample frequency (Hz) (determines resolution)
 
 // Sensor I/O (constructor format: (pin_HIGH, pin_LOW))
 CapacitiveSensor cs[] = {
@@ -44,7 +44,6 @@ void setup() {
     Serial.begin(115200);
 
     // Raise error if 1) sample rate > 0.002 / nSensors or 2) buffer size > 1500
-    long n = (long) (tFilter * sampleRate);
     double sampleRateMax = (1.0 / (2.0e-3 * (double) nSensors));
     if (sampleRate > sampleRateMax) {
         Serial.print("sampleRate of "); Serial.print(sampleRate); 
@@ -52,6 +51,7 @@ void setup() {
         Serial.print("Changing sampleRate to "); Serial.println(sampleRateMax);
         sampleRate = sampleRateMax;
     }
+    long n = (long) (tFilter * sampleRate);
     int nMax = (long) (1500.0 / ((double) nSensors));
     if (n > nMax) {
         Serial.print("buffer size of "); Serial.print(n); 
@@ -68,6 +68,17 @@ void setup() {
     // Get start time and minimum sample period
     tStart = micros(); // time in ms
     samplePeriod = (unsigned long) ((1.0/sampleRate)*1e6); // period in us 
+
+    // Print parameters before beginning loop
+    Serial.println("Starting sensor with parameters:");
+    Serial.print("buffer size: "); Serial.println(n);
+    Serial.print("buffer duration: "); Serial.println((double) n * samplePeriod * 1.0e-6);
+    Serial.print("sample rate: "); Serial.println(sampleRate);
+    Serial.print("alpha: "); Serial.println(alpha);
+    Serial.print("signal threshold (std): "); Serial.println(thresh);
+    Serial.println();
+
+    delay(5000);
 }
 
 void loop() {
