@@ -3,6 +3,7 @@
 
 // Settings
 const int nSensors = 2; // number of lick sensors
+long sensitivity = 120; // sensor sensitivity
 double thresh = 4.0; // threshold for detecting lick (stds from mean)
 double alpha = 0.0; // contribution of signal to filter buffer stats
 double tFilter = 0.25; // duration of filter buffer (s) (determines responsiveness)
@@ -75,7 +76,7 @@ void loop() {
     {
       // Get current sensor value
       // Note: sensor value acquisition limits transmission rate
-      val = cs[i].capacitiveSensor(30);
+      val = cs[i].capacitiveSensor(sensitivity);
       
       // Print raw values
       Serial.print(" ");
