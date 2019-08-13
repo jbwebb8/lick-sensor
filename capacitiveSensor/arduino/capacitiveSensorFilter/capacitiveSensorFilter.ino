@@ -3,9 +3,10 @@
 
 // Settings
 const int nSensors = 2; // number of lick sensors
-double thresh = 4.0; // threshold for detecting lick (stds from mean)
-double alpha = 0.002; // contribution of signal to filter buffer stats
-double tFilter = 0.250; // duration of filter buffer (s) (determines responsiveness)
+long sensitivity = 30; // sensor sensitivity (increases acquisition time)
+double thresh = 5.0; // threshold for detecting lick (stds from mean)
+double alpha = 0.007; // contribution of signal to filter buffer stats
+double tFilter = 0.500; // duration of filter buffer (s) (determines responsiveness)
 double sampleRate = 200.0; // sample frequency (Hz) (determines resolution)
 
 // Sensor I/O (constructor format: (pin_HIGH, pin_LOW))
@@ -43,8 +44,9 @@ void setup() {
     // Begin serial transmission
     Serial.begin(115200);
 
-    // Raise error if 1) sample rate > 0.002 / nSensors or 2) buffer size > 1500
-    double sampleRateMax = (1.0 / (2.0e-3 * (double) nSensors));
+    // Raise error if 1) sample rate > 0.002 / (nSensors * sensitivity/30), or 
+    // 2) buffer size > 1500
+    double sampleRateMax = (1.0 / (2.0e-3 * (double) nSensors * ((double) sensitivity / 30.0)));
     if (sampleRate > sampleRateMax) {
         Serial.print("sampleRate of "); Serial.print(sampleRate); 
         Serial.print(" exceeds maximum of "); Serial.println(sampleRateMax);
@@ -74,8 +76,8 @@ void setup() {
     Serial.print("buffer size: "); Serial.println(n);
     Serial.print("buffer duration: "); Serial.println((double) n * samplePeriod * 1.0e-6);
     Serial.print("sample rate: "); Serial.println(sampleRate);
-    Serial.print("alpha: "); Serial.println(alpha);
-    Serial.print("signal threshold (std): "); Serial.println(thresh);
+    Serial.print("alpha: "); Serial.println(alpha, 5);
+    Serial.print("signal threshold (std): "); Serial.println(thresh, 2);
     Serial.println();
 
     delay(5000);
@@ -100,7 +102,7 @@ void loop() {
         {
             // Get current sensor value
             // Note: sensor value acquisition limits transmission rate
-            val = cs[i].capacitiveSensor(30);
+            val = cs[i].capacitiveSensor(sensitivity);
       
             // Print raw values
             Serial.print(" ");
@@ -159,15 +161,19 @@ void processCommand(void) {
     // Set new value
     if (strcmp(name, "alpha") == 0) {
       alpha = atof(val);
+      Serial.print("Setting alpha to "); Serial.println(alpha, 5);
       for (int i = 0; i < nSensors; i++) {
         mf[i].alpha = alpha;
       }
+      delay(5000);
     }
     else if (strcmp(name, "thresh") == 0) {
       thresh = atof(val);
+      Serial.print("Setting threshold to "); Serial.println(thresh, 2);
       for (int i = 0; i < nSensors; i++) {
         mf[i].thresh = thresh;
       }
+      delay(5000);
     }
     else {
       Serial.print("Unknown command: ");
